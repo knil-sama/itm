@@ -1,15 +1,18 @@
 import typing
 import uuid
-#request don't work in docker for this website https://github.com/kennethreitz/requests/issues/3948
-#import urllib3
+
+# request don't work in docker for this website https://github.com/kennethreitz/requests/issues/3948
+# import urllib3
 import urllib.request
 
-def download_url(url: str, save_directory: str, error_directory: str
+
+def download_url(
+    url: str, save_directory: str, error_directory: str
 ) -> typing.Tuple[bool, str]:
     url_uuid = uuid.uuid1()
     download_success = False
     try:
-        r= urllib.request.urlopen(url)
+        r = urllib.request.urlopen(url)
         if r.getcode() == 200:
             download_success = True
     except Exception as e:
@@ -21,6 +24,7 @@ def download_url(url: str, save_directory: str, error_directory: str
         filepath = f"{error_directory}/{url_uuid}"
         open(filepath, "w").write("")
     return download_success, filepath
+
 
 def parse_url_file(url_filepath: str):
     count = 0
@@ -39,6 +43,7 @@ def parse_url_file(url_filepath: str):
             url_file.seek(0)
             url_file.write(end_file)
             url_file.truncate()
+
 
 if __name__ == "__main__":
     parse_url_file(url_filepath="urls.txt")
