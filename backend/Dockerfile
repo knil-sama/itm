@@ -1,22 +1,20 @@
-FROM python:3.6
+FROM puckel/docker-airflow:1.10.3
 
-RUN groupadd -g 999 backend \
-&& useradd -ms /bin/bash -u 2001 -g backend backend
+USER root
 
-RUN mkdir /opt/backend \
-  && chown backend:backend /opt/backend
-
-WORKDIR /opt/backend
-
-COPY --chown=backend:backend . /opt/backend
-
+RUN mkdir /opt/backend
 COPY . /opt/backend
+COPY --chown=airflow:airflow . /opt/backend
 
 RUN apt-get update -y && apt-get upgrade -y && apt-get install -y libssl-dev libffi-dev
-RUN pip install --upgrade pip && pip install -r requirements.txt
-USER backend
+RUN pip install --upgrade pip && pip install -r /opt/backend/requirements.txt
 
-RUN mkdir -p data/download data/download_error data/to_process_md5 data/processed_md5 data/to_process_rgb data/processed_rgb
+RUN mkdir -p /opt/backend/data/download /opt/backend/data/download_error
 
 ENV PYTHONPATH /opt:$PYTHONPATH
+
+USER airflow
+
+WORKDIR /usr/local/airflow
+ENTRYPOINT ["/entrypoint.sh"]
 
