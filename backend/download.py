@@ -4,7 +4,6 @@ import uuid
 # request don't work in docker for this website https://github.com/kennethreitz/requests/issues/3948
 # import urllib3
 import urllib.request
-
 import backend
 
 
@@ -28,27 +27,23 @@ def download_url(
     return download_success, filepath
 
 
-def parse_url_file(url_filepath: str):
+def parse_url_file(url_filepath: str, limit: int = 20):
     count = 0
+    downloaded_files = []
     with open(url_filepath, "r+") as url_file:
-        while True:
-            line =url_file.readline()
-            if line == "":
-                break
+        for url in url_file:
             success, result_filepath = download_url(
-                url=line,
+                url=url,
                 save_directory=backend.BACKEND_DOWNLOAD_DIRECTORY,
                 error_directory=backend.BACKEND_ERROR_DIRECTORY,
             )
-            if success:
-                count += 1
-            if count == 10:
+            downloaded_files.append(
+                {"success": success, "url": url, "filepath": result_filepath}
+            )
+            count += 1
+            if count == limit:
                 break
-            end_file = url_file.read()
-            url_file.seek(0)
-            url_file.write(end_file)
-            url_file.truncate()
-            url_file.seek(0)
+    return downloaded_files
 
 
 if __name__ == "__main__":
