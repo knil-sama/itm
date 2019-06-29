@@ -22,3 +22,34 @@ Notes:
 - Il ne doit pas y avoir de doublons d'image dans la base MongoDB (unicite du MD5)
 - Les technologies autres que celles citees sont libres
 - Le travail sera rendu sur un repo git public
+
+# Usage
+
+`docker-compose up`
+
+then go to locahost:8080
+
+Click on "ON" of "main_dag" to start the workflow
+
+once the workflow complete you can use endpoint
+
+http://localhost:5000/image/<MD5>  
+and  
+http://localhost:5000/monitoring <!> not working right now generated graph is empty
+
+# Process
+
+Download will pick a fixed number of picture and load them locally, then 2 parralel job will process this batch, the result of both will be loaded into mongo  
+and a last job will update monitoring collection and remove processed url from urls.txt
+
+# Input parameter
+
+* backend/urls.txt => can update content
+* dags/mainDag.schedule_interval => can lower frequency
+* dags/mainDag.download_operator:limit => can increase number of pictures handled each batch
+
+# Debug
+
+http://localhost:8081/ for admin GUI of mongodb
+
+http://localhost:5000/images for a list of existing md5

@@ -27,8 +27,9 @@ def download_url(
     return download_success, filepath
 
 
-def parse_url_file(url_filepath: str, limit: int = 20):
+def parse_url_file(url_filepath: str, limit: typing.Union[int,str] = 20):
     count = 0
+    limit=int(limit)
     downloaded_files = []
     with open(url_filepath, "r+") as url_file:
         for url in url_file:

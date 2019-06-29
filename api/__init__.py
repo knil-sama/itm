@@ -1,14 +1,13 @@
 import os
+import pymongo
+import flask_restful
 
 MONGO_INITDB_ROOT_USERNAME = os.environ["MONGO_INITDB_ROOT_USERNAME"]
 MONGO_INITDB_ROOT_PASSWORD = os.environ["MONGO_INITDB_ROOT_PASSWORD"]
 
-CLIENT = pymongo.MongoClient("mongodb://mongo:27017",username=backend.MONGO_INITDB_ROOT_USERNAME,password=backend.MONGO_INITDB_ROOT_PASSWORD)
-DB = CLIENT["image_bank"]
-COLLECTION = DB.images
+CLIENT = pymongo.MongoClient("mongodb://mongo:27017",username=MONGO_INITDB_ROOT_USERNAME,password=MONGO_INITDB_ROOT_PASSWORD)
 
-
-class Index(Resource):
+class Index(flask_restful.Resource):
     """
     itm api
     """
@@ -18,7 +17,5 @@ class Index(Resource):
         Returns:
             str: Hello world for people calling the api
         """
-        json = {
-            "message": "Hello, this api exist to query data"
-        }
+        json = {"message": "Hello, this api exist to query data"}
         return json, 200

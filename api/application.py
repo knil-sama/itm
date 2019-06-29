@@ -9,7 +9,10 @@ import os
 import logging
 
 from api.image import Image
+from api.images import Images
+from api.monitoring import Monitoring
 from api import Index
+
 
 def create_app():
     """
@@ -20,21 +23,18 @@ def create_app():
 
     application = Flask(__name__)
     # bugsnag integration
-    handle_exceptions(application)
     CORS(application)
 
     application.config["JSON_AS_ASCII"] = False
-    if RELEASE_STAGE == "production":
-        application.config["DEBUG"] = False
-    else:
-        application.config["DEBUG"] = True
+    application.config["DEBUG"] = True
     api = Api(application)
     # default index
     api.add_resource(Index, "/")
     api.add_resource(Image, "/".join(["/image", "<string:md5>"]))
+    api.add_resource(Images, "/images")
+    api.add_resource(Monitoring, "/monitoring")
     return application
 
-
-def main():
+if __name__ == "__main__":  # pragma: no cover
     application = create_app()
-    return application
+    application.run(host="0.0.0.0", port=5000)
