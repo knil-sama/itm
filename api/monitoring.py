@@ -35,8 +35,10 @@ class Monitoring(flask_restful.Resource):
             plt.legend(loc='upper right')
             plt.xticks(x)
             fake_file = io.BytesIO()
-            plt.savefig(fake_file, format="png", dpi=fig.dpi)
             response=make_response(fake_file.read())
+            #plt.savefig("/tmp.png", format="png", dpi=fig.dpi)
+            #with open("/tmp.png") as test:
+            #    response=make_response(test.read())
             response.headers.set('Content-Type', 'image/png')
             response.headers.set(
                 'Content-Disposition', 'attachment', filename='monitoring.png')

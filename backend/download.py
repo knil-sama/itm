@@ -1,9 +1,7 @@
 import typing
 import uuid
 
-# request don't work in docker for this website https://github.com/kennethreitz/requests/issues/3948
-# import urllib3
-import urllib.request
+import requests
 import backend
 
 
@@ -13,14 +11,14 @@ def download_url(
     url_uuid = uuid.uuid1()
     download_success = False
     try:
-        r = urllib.request.urlopen(url)
-        if r.getcode() == 200:
+        r = requests.get(url)
+        if r.status_code == 200:
             download_success = True
     except Exception as e:
         print(e)
     if download_success:
         filepath = f"{save_directory}/{url_uuid}"
-        open(filepath, "wb").write(r.read())
+        open(filepath, "wb").write(r.content)
     else:
         filepath = f"{error_directory}/{url_uuid}"
         open(filepath, "w").write("")
@@ -31,10 +29,10 @@ def parse_url_file(url_filepath: str, limit: typing.Union[int,str] = 20):
     count = 0
     limit=int(limit)
     downloaded_files = []
-    with open(url_filepath, "r+") as url_file:
+    with open(url_filepath, "r") as url_file:
         for url in url_file:
             success, result_filepath = download_url(
-                url=url,
+                url=url.strip(),
                 save_directory=backend.BACKEND_DOWNLOAD_DIRECTORY,
                 error_directory=backend.BACKEND_ERROR_DIRECTORY,
             )
