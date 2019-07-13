@@ -25,25 +25,16 @@ def download_url(
     return download_success, filepath
 
 
-def parse_url_file(url_filepath: str, limit: typing.Union[int,str] = 20):
-    count = 0
-    limit=int(limit)
+def download_urls(**context):
+    generated_urls = context["task_instance"].xcom_pull(task_ids="generate_url")
     downloaded_files = []
-    with open(url_filepath, "r") as url_file:
-        for url in url_file:
-            success, result_filepath = download_url(
-                url=url.strip(),
-                save_directory=backend.BACKEND_DOWNLOAD_DIRECTORY,
-                error_directory=backend.BACKEND_ERROR_DIRECTORY,
-            )
-            downloaded_files.append(
-                {"success": success, "url": url, "filepath": result_filepath}
-            )
-            count += 1
-            if count == limit:
-                break
+    for url in generated_urls:
+        success, result_filepath = download_url(
+            url=url.strip(),
+            save_directory=backend.BACKEND_DOWNLOAD_DIRECTORY,
+            error_directory=backend.BACKEND_ERROR_DIRECTORY,
+        )
+        downloaded_files.append(
+            {"success": success, "url": url, "filepath": result_filepath}
+        )
     return downloaded_files
-
-
-if __name__ == "__main__":
-    parse_url_file(url_filepath="urls.txt")
