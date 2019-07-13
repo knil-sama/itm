@@ -35,6 +35,7 @@ def create_app():
     api.add_resource(Monitoring, "/monitoring")
     return application
 
+
 if __name__ == "__main__":  # pragma: no cover
     application = create_app()
     application.run(host="0.0.0.0", port=5000)

@@ -1,6 +1,7 @@
 from datetime import datetime
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
+import backend.generate as generate
 import backend.download as download
 import backend.md5 as md5
 import backend.grayscale as grayscale
@@ -10,19 +11,24 @@ import backend.update_monitoring as update_monitoring
 dag = DAG(
     "main_dag",
     description="Simple example DAG",
-    # run every minutes 
-    schedule_interval="* * * * *",
+    # run every minutes
+    schedule_interval="*/5 * * * *",
     start_date=datetime(2017, 3, 20),
-    # workflow is not supposed to be run in parralel
-    concurrency=1,
+    # workflow can be run in parralel
+    concurrency=3,
     catchup=False,
 )
 
+generate_operator = PythonOperator(
+    task_id="generate_url", python_callable=generate.generate_urls, dag=dag
+)
+
+
 download_operator = PythonOperator(
     task_id="download_image",
-    python_callable=download.parse_url_file,
-    op_kwargs={"url_filepath": "/opt/backend/urls.txt","limit": "10"},
+    python_callable=download.download_urls,
     dag=dag,
+    provide_context=True,
 )
 
 md5_operator = PythonOperator(
@@ -51,6 +57,7 @@ update_monitoring_operator = PythonOperator(
     provide_context=True,
 )
 
+generate_operator >> download_operator
 download_operator >> md5_operator >> load_result_operator
 download_operator >> grayscale_operator >> load_result_operator
 load_result_operator >> update_monitoring_operator

@@ -33,7 +33,7 @@ and
 
 Genreate will generate a number of image ranging from 0 to 1000, Download will load locally all url generated, then 2 parralel job will process this batch, the result of both will be loaded into mongo  
 and a last job will update monitoring collection and remove processed url from urls.txt
-
+The generate part can be replaced by an airflow `s3_key_sensor` or anything that can continously stream data. 
 # Input parameter
 
 * dags/mainDag.schedule_interval => can lower frequency
