@@ -25,7 +25,7 @@ services:
         environment:
             - LOAD_EX=n
             - FERNET_KEY=46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLbfzqDDho=
-            - EXECUTOR=Celery
+            - AIRFLOW__CORE__EXECUTOR=Celery
             - MONGO_INITDB_ROOT_USERNAME=root
             - MONGO_INITDB_ROOT_PASSWORD=example
             # - POSTGRES_USER=airflow
@@ -39,11 +39,11 @@ services:
         ports:
             - "8080:8080"
         command: webserver
-        healthcheck:
-            test: ["CMD-SHELL", "[ -f /usr/local/airflow/airflow-webserver.pid ]"]
-            interval: 30s
-            timeout: 30s
-            retries: 3
+        #healthcheck:
+        #    test: ["CMD-SHELL", "[ -f /usr/local/airflow/airflow-webserver.pid ]"]
+        #    interval: 30s
+        #    timeout: 30s
+        #    retries: 3
 
     flower:
         build: ./backend
@@ -51,11 +51,11 @@ services:
         depends_on:
             - redis
         environment:
-            - EXECUTOR=Celery
+            - AIRFLOW__CORE__EXECUTOR=Celery
             # - REDIS_PASSWORD=redispass
         ports:
             - "5555:5555"
-        command: flower
+        command: celery flower
 
     scheduler:
         build: ./backend
@@ -67,14 +67,14 @@ services:
         environment:
             - LOAD_EX=n
             - FERNET_KEY=46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLbfzqDDho=
-            - EXECUTOR=Celery
+            - AIRFLOW__CORE__EXECUTOR=Celery
             - MONGO_INITDB_ROOT_USERNAME=root
             - MONGO_INITDB_ROOT_PASSWORD=example
             # - POSTGRES_USER=airflow
             # - POSTGRES_PASSWORD=airflow
             # - POSTGRES_DB=airflow
             # - REDIS_PASSWORD=redispass
-        command: scheduler
+        command: airflow scheduler
 
     worker:
         build: ./backend/
@@ -86,14 +86,14 @@ services:
             - ./dags:/usr/local/airflow/dags
         environment:
             - FERNET_KEY=46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLbfzqDDho=
-            - EXECUTOR=Celery
+            - AIRFLOW__CORE__EXECUTOR=Celery
             - MONGO_INITDB_ROOT_USERNAME=root
             - MONGO_INITDB_ROOT_PASSWORD=example
             # - POSTGRES_USER=airflow
             # - POSTGRES_PASSWORD=airflow
             # - POSTGRES_DB=airflow
             # - REDIS_PASSWORD=redispass
-        command: worker
+        command: celery worker
     mongo:
         image: mongo
         restart: always
