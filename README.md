@@ -44,3 +44,9 @@ The generate part can be replaced by an airflow `s3_key_sensor` or anything that
 http://localhost:8081/ for admin GUI of mongodb
 
 http://localhost:5000/images for a list of existing md5
+
+# Resources
+
+https://dzone.com/articles/running-apache-airflow-dag-with-docker
+
+https://airflow.apache.org/docs/apache-airflow/stable/configurations-ref.html
