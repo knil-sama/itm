@@ -19,7 +19,9 @@ Dags run every 5 minutes:
 
 `docker-compose up`
 
-then go to locahost:8080
+then go to [http://0.0.0.0:8080](http://0.0.0.0:8080)
+
+Use default `admin` user with `test` to connect
 
 Click on "ON" of "main_dag" to start the workflow
 
@@ -41,9 +43,9 @@ The generate part can be replaced by an airflow `s3_key_sensor` or anything that
 
 # Debug
 
-http://localhost:8081/ for admin GUI of mongodb
+[http://localhost:8081/](http://localhost:8081/) for admin GUI of mongodb
 
-http://localhost:5000/images for a list of existing md5
+[http://localhost:5000/images](http://localhost:5000/images) for a list of existing md5
 
 # Resources
 
