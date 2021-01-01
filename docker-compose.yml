@@ -6,7 +6,7 @@ services:
         # command: redis-server --requirepass redispass
 
     postgres:
-        image: postgres:9.6
+        image: postgres:13
         environment:
             - POSTGRES_USER=airflow
             - POSTGRES_PASSWORD=airflow
@@ -51,7 +51,7 @@ services:
             - env_airflow.env
         ports:
             - "5555:5555"
-        command: bash -c "airflow db upgrade && airflow celery flower"
+        command: bash -c "airflow celery flower"
 
     scheduler:
         build: ./backend
@@ -66,7 +66,7 @@ services:
             - MONGO_INITDB_ROOT_USERNAME=root
             - MONGO_INITDB_ROOT_PASSWORD=example
             # - REDIS_PASSWORD=redispass
-        command: bash -c "airflow db upgrade && airflow scheduler"
+        command: bash -c "airflow scheduler"
 
     worker:
         build: ./backend/
@@ -82,7 +82,7 @@ services:
             - MONGO_INITDB_ROOT_USERNAME=root
             - MONGO_INITDB_ROOT_PASSWORD=example
             # - REDIS_PASSWORD=redispass
-        command: bash -c "airflow db upgrade && airflow celery worker"
+        command: bash -c "airflow celery worker"
 
     mongo:
         image: mongo
