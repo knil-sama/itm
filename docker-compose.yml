@@ -22,15 +22,11 @@ services:
         depends_on:
             - postgres
             - redis
+        env_file:
+            - env_airflow.env
         environment:
-            - LOAD_EX=n
-            - FERNET_KEY=46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLbfzqDDho=
-            - EXECUTOR=Celery
             - MONGO_INITDB_ROOT_USERNAME=root
             - MONGO_INITDB_ROOT_PASSWORD=example
-            # - POSTGRES_USER=airflow
-            # - POSTGRES_PASSWORD=airflow
-            # - POSTGRES_DB=airflow
             # - REDIS_PASSWORD=redispass
         volumes:
             - ./dags:/usr/local/airflow/dags
@@ -38,24 +34,24 @@ services:
             # - ./plugins:/usr/local/airflow/plugins
         ports:
             - "8080:8080"
-        command: webserver
-        healthcheck:
-            test: ["CMD-SHELL", "[ -f /usr/local/airflow/airflow-webserver.pid ]"]
-            interval: 30s
-            timeout: 30s
-            retries: 3
+        command: bash -c "airflow db init && airflow users create --password test --username admin --firstname Peter --lastname Parker --role Admin --email spiderman@superhero.org && airflow webserver"
+        #healthcheck:
+        #    test: ["CMD-SHELL", "[ -f /usr/local/airflow/airflow-webserver.pid ]"]
+        #    interval: 30s
+        #    timeout: 30s
+        #    retries: 3
 
     flower:
         build: ./backend
         restart: always
         depends_on:
             - redis
-        environment:
-            - EXECUTOR=Celery
-            # - REDIS_PASSWORD=redispass
+            - postgres
+        env_file:
+            - env_airflow.env
         ports:
             - "5555:5555"
-        command: flower
+        command: bash -c "airflow db upgrade && airflow celery flower"
 
     scheduler:
         build: ./backend
@@ -64,17 +60,13 @@ services:
             - airflow_webserver
         volumes:
             - ./dags:/usr/local/airflow/dags
+        env_file:
+            - env_airflow.env
         environment:
-            - LOAD_EX=n
-            - FERNET_KEY=46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLbfzqDDho=
-            - EXECUTOR=Celery
             - MONGO_INITDB_ROOT_USERNAME=root
             - MONGO_INITDB_ROOT_PASSWORD=example
-            # - POSTGRES_USER=airflow
-            # - POSTGRES_PASSWORD=airflow
-            # - POSTGRES_DB=airflow
             # - REDIS_PASSWORD=redispass
-        command: scheduler
+        command: bash -c "airflow db upgrade && airflow scheduler"
 
     worker:
         build: ./backend/
@@ -84,16 +76,14 @@ services:
             - mongo
         volumes:
             - ./dags:/usr/local/airflow/dags
+        env_file:
+            - env_airflow.env
         environment:
-            - FERNET_KEY=46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLbfzqDDho=
-            - EXECUTOR=Celery
             - MONGO_INITDB_ROOT_USERNAME=root
             - MONGO_INITDB_ROOT_PASSWORD=example
-            # - POSTGRES_USER=airflow
-            # - POSTGRES_PASSWORD=airflow
-            # - POSTGRES_DB=airflow
             # - REDIS_PASSWORD=redispass
-        command: worker
+        command: bash -c "airflow db upgrade && airflow celery worker"
+
     mongo:
         image: mongo
         restart: always
