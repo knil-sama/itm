@@ -47,6 +47,8 @@ services:
         depends_on:
             - redis
             - postgres
+            - worker_a
+            - worker_b
         env_file:
             - env_airflow.env
         ports:
@@ -58,6 +60,7 @@ services:
         restart: always
         depends_on:
             - airflow_webserver
+            - flower
         volumes:
             - ./dags:/usr/local/airflow/dags
         env_file:
@@ -65,14 +68,12 @@ services:
         environment:
             - MONGO_INITDB_ROOT_USERNAME=root
             - MONGO_INITDB_ROOT_PASSWORD=example
-            # - REDIS_PASSWORD=redispass
         command: bash -c "airflow scheduler"
 
-    worker:
+    worker_a:
         build: ./backend/
         restart: always
         depends_on:
-            - scheduler
             - mongo
         volumes:
             - ./dags:/usr/local/airflow/dags
@@ -81,8 +82,23 @@ services:
         environment:
             - MONGO_INITDB_ROOT_USERNAME=root
             - MONGO_INITDB_ROOT_PASSWORD=example
-            # - REDIS_PASSWORD=redispass
         command: bash -c "airflow celery worker"
+
+    worker_b:
+        build: ./backend/
+        restart: always
+        depends_on:
+            - mongo
+        volumes:
+            - ./dags:/usr/local/airflow/dags
+        env_file:
+            - env_airflow.env
+        environment:
+            - MONGO_INITDB_ROOT_USERNAME=root
+            - MONGO_INITDB_ROOT_PASSWORD=example
+        command: bash -c "airflow celery worker"
+
+ 
 
     mongo:
         image: mongo
