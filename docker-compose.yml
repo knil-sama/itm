@@ -22,8 +22,8 @@ services:
         depends_on:
             - postgres
             - redis
-        env_file:
-            - env_airflow.env
+        file:
+            - airflow.env
         environment:
             - MONGO_INITDB_ROOT_USERNAME=root
             - MONGO_INITDB_ROOT_PASSWORD=example
@@ -49,8 +49,8 @@ services:
             - postgres
             - worker_a
             - worker_b
-        env_file:
-            - env_airflow.env
+        file:
+            - airflow.env
         ports:
             - "5555:5555"
         command: bash -c "airflow celery flower"
@@ -63,8 +63,8 @@ services:
             - flower
         volumes:
             - ./dags:/usr/local/airflow/dags
-        env_file:
-            - env_airflow.env
+        file:
+            - airflow.env
         environment:
             - MONGO_INITDB_ROOT_USERNAME=root
             - MONGO_INITDB_ROOT_PASSWORD=example
@@ -77,8 +77,8 @@ services:
             - mongo
         volumes:
             - ./dags:/usr/local/airflow/dags
-        env_file:
-            - env_airflow.env
+        file:
+            - airflow.env
         environment:
             - MONGO_INITDB_ROOT_USERNAME=root
             - MONGO_INITDB_ROOT_PASSWORD=example
@@ -91,8 +91,8 @@ services:
             - mongo
         volumes:
             - ./dags:/usr/local/airflow/dags
-        env_file:
-            - env_airflow.env
+        file:
+            - airflow.env
         environment:
             - MONGO_INITDB_ROOT_USERNAME=root
             - MONGO_INITDB_ROOT_PASSWORD=example
