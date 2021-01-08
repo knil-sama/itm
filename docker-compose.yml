@@ -22,24 +22,15 @@ services:
         depends_on:
             - postgres
             - redis
-        file:
+        env_file:
             - airflow.env
         environment:
             - MONGO_INITDB_ROOT_USERNAME=root
             - MONGO_INITDB_ROOT_PASSWORD=example
             # - REDIS_PASSWORD=redispass
-        volumes:
-            - ./dags:/usr/local/airflow/dags
-            # Uncomment to include custom plugins
-            # - ./plugins:/usr/local/airflow/plugins
         ports:
             - "8080:8080"
         command: bash -c "airflow db init && airflow users create --password test --username admin --firstname Peter --lastname Parker --role Admin --email spiderman@superhero.org && airflow webserver"
-        #healthcheck:
-        #    test: ["CMD-SHELL", "[ -f /usr/local/airflow/airflow-webserver.pid ]"]
-        #    interval: 30s
-        #    timeout: 30s
-        #    retries: 3
 
     flower:
         build: ./backend
@@ -49,7 +40,7 @@ services:
             - postgres
             - worker_a
             - worker_b
-        file:
+        env_file:
             - airflow.env
         ports:
             - "5555:5555"
@@ -63,7 +54,7 @@ services:
             - flower
         volumes:
             - ./dags:/usr/local/airflow/dags
-        file:
+        env_file:
             - airflow.env
         environment:
             - MONGO_INITDB_ROOT_USERNAME=root
@@ -77,7 +68,7 @@ services:
             - mongo
         volumes:
             - ./dags:/usr/local/airflow/dags
-        file:
+        env_file:
             - airflow.env
         environment:
             - MONGO_INITDB_ROOT_USERNAME=root
@@ -91,14 +82,12 @@ services:
             - mongo
         volumes:
             - ./dags:/usr/local/airflow/dags
-        file:
+        env_file:
             - airflow.env
         environment:
             - MONGO_INITDB_ROOT_USERNAME=root
             - MONGO_INITDB_ROOT_PASSWORD=example
         command: bash -c "airflow celery worker"
-
- 
 
     mongo:
         image: mongo

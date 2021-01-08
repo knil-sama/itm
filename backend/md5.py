@@ -4,12 +4,14 @@ import hashlib
 import backend
 
 
+def load_event_md5(collection, event_id: str, md5: str):
+    collection.update({"id": event_id}, {"$set": {"md5": md5}}, upsert=True)
+
+
 def md5(**context):
     downloaded_images = context["task_instance"].xcom_pull(task_ids="download_image")
-    dict_md5 = dict()
     for downloaded_image in downloaded_images:
         if downloaded_image["success"]:
-            with open(downloaded_image["filepath"], "rb") as image_file:
-                image_md5 = hashlib.md5(image_file.read()).hexdigest()
-                dict_md5[downloaded_image["filepath"]] = image_md5
-    return dict_md5
+            event = backend.EVENTS.find_one({"id": downloaded_image["event_id"]})
+            image_md5 = hashlib.md5(event["image"]).hexdigest()
+            load_event_md5(backend.EVENTS, downloaded_image["event_id"], image_md5)
