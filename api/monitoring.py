@@ -18,7 +18,9 @@ class Monitoring(flask_restful.Resource):
         list_result = list(result_cursor)
         monitoring = [
             {
-                "execution_date": result["execution_date"].strftime("%m/%d/%Y, %H:%M:%S"),
+                "execution_date": result["execution_date"].strftime(
+                    "%m/%d/%Y, %H:%M:%S"
+                ),
                 "success": result["success"],
                 "error": result["error"],
             }
