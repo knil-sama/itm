@@ -2,16 +2,16 @@
 All code must follow json api spec
 """
 from flask import Flask
-from flask_restful import Api
 from flask_cors import CORS
+from flask_restful import Api
 
+from api import Index
 from api.image import Image
 from api.images import Images
 from api.monitoring import Monitoring
-from api import Index
 
 
-def create_app():
+def create_app() -> Flask:
     """
     Create the app and setting all the road here
     Returns:
@@ -27,7 +27,7 @@ def create_app():
     api = Api(application)
     # default index
     api.add_resource(Index, "/")
-    api.add_resource(Image, "/".join(["/image", "<string:md5>"]))
+    api.add_resource(Image, "/image/<string:md5>")
     api.add_resource(Images, "/images")
     api.add_resource(Monitoring, "/monitoring")
     return application

@@ -24,8 +24,7 @@ def generate_urls(min_nb_urls: int = 0, max_nb_urls: int = 100) -> list[str]:
         We can generate an empty array
     """
     nb_urls = random.randint(min_nb_urls, max_nb_urls)
-    urls = [generate_url() for _ in range(min_nb_urls, nb_urls)]
-    return urls
+    return [generate_url() for _ in range(min_nb_urls, nb_urls)]
 
 
 if __name__ == "__main__":

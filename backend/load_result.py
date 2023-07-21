@@ -1,8 +1,12 @@
-import backend
 import datetime as dt
+from typing import Any
+
+import pymongo
+
+import backend
 
 
-def load_image(collection, event: dict):
+def load_image(collection: pymongo.Collection, event: dict) -> None:
     collection.update(
         {"md5": event["md5"]},
         {
@@ -11,14 +15,14 @@ def load_image(collection, event: dict):
                 "grayscale": event["grayscale"],
                 "height": event["height"],
                 "width": event["width"],
-                "insert_time": dt.datetime.utcnow(),
-            }
+                "insert_time": dt.datetime.now(dt.UTC),
+            },
         },
         upsert=True,
     )
 
 
-def load_result(**context):
+def load_result(**context: dict[str, Any]) -> None:
     downloaded_images = context["task_instance"].xcom_pull(task_ids="download_image")
     for downloaded_image in downloaded_images:
         if downloaded_image["success"]:

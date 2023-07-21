@@ -1,55 +1,56 @@
-from datetime import datetime
+import pendulum
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
-import backend.generate as generate
-import backend.download as download
-import backend.md5 as md5
-import backend.grayscale as grayscale
-import backend.load_result as load_result
-import backend.update_monitoring as update_monitoring
+
+from backend import download, generate, grayscale, load_result, md5, update_monitoring
 
 dag = DAG(
     "main_dag",
     description="Simple example DAG",
     # run every minutes
     schedule_interval="*/5 * * * *",
-    start_date=datetime(2017, 3, 20),
+    start_date=pendulum.datetime(2017, 3, 20),
     # workflow can be run in parralel
     concurrency=3,
     catchup=False,
 )
 
-generate_operator = PythonOperator(
-    task_id="generate_url", python_callable=generate.generate_urls, dag=dag
+generate_url = PythonOperator(
+    task_id="generate_url",
+    python_callable=generate.generate_urls,
+    dag=dag,
 )
 
 
-download_operator = PythonOperator(
+download_image = PythonOperator(
     task_id="download_image",
     python_callable=download.download_urls,
     dag=dag,
     provide_context=True,
 )
 
-md5_operator = PythonOperator(
-    task_id="md5_image", python_callable=md5.md5, dag=dag, provide_context=True
+md5_image = PythonOperator(
+    task_id="md5_image",
+    python_callable=md5.md5,
+    dag=dag,
+    provide_context=True,
 )
 
-grayscale_operator = PythonOperator(
+grayscale_image = PythonOperator(
     task_id="grayscale_image",
     python_callable=grayscale.grayscale,
     dag=dag,
     provide_context=True,
 )
 
-load_result_operator = PythonOperator(
+load_result_image = PythonOperator(
     task_id="load_result_image",
     python_callable=load_result.load_result,
     dag=dag,
     provide_context=True,
 )
 
-update_monitoring_operator = PythonOperator(
+update_monitoring_image = PythonOperator(
     task_id="update_monitoring_image",
     python_callable=update_monitoring.update_monitoring,
     op_kwargs={"url_filepath": "/opt/backend/urls.txt"},
@@ -57,7 +58,7 @@ update_monitoring_operator = PythonOperator(
     provide_context=True,
 )
 
-generate_operator >> download_operator
-download_operator >> md5_operator >> load_result_operator
-download_operator >> grayscale_operator >> load_result_operator
-load_result_operator >> update_monitoring_operator
+generate_url >> download_image
+download_image >> md5_image >> load_result_image
+download_image >> grayscale_image >> load_result_image
+load_result_image >> update_monitoring_image

@@ -1,12 +1,16 @@
 import hashlib
+from typing import Any
+
+import pymongo
+
 import backend
 
 
-def load_event_md5(collection, event_id: str, md5: str):
+def load_event_md5(collection: pymongo.Collection, event_id: str, md5: str) -> None:
     collection.update({"id": event_id}, {"$set": {"md5": md5}}, upsert=True)
 
 
-def md5(**context):
+def md5(**context: dict[str, Any]) -> None:
     downloaded_images = context["task_instance"].xcom_pull(task_ids="download_image")
     for downloaded_image in downloaded_images:
         if downloaded_image["success"]:
