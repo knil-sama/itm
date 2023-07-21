@@ -1,7 +1,6 @@
 import os
 import typing
 import uuid
-import base64
 import datetime as dt
 import requests
 import backend

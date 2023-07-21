@@ -1,4 +1,3 @@
-from flask import send_file
 import flask_restful
 import api
 

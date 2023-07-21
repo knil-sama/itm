@@ -108,10 +108,9 @@ services:
         build: ./api
         command: gunicorn "application:create_app()" --bind 0.0.0.0:5000 --workers 4
         depends_on:
-            - mongo 
+            - mongo
         environment:
             - MONGO_INITDB_ROOT_USERNAME=root
             - MONGO_INITDB_ROOT_PASSWORD=example
         ports:
             - "5000:5000"
-
