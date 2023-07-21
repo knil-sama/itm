@@ -4,6 +4,7 @@ from airflow.operators.python_operator import PythonOperator
 
 from backend import download, generate, grayscale, load_result, md5, update_monitoring
 
+
 dag = DAG(
     "main_dag",
     description="Simple example DAG",
@@ -23,6 +24,7 @@ generate_url = PythonOperator(
 
 
 download_image = PythonOperator(
+
     task_id="download_image",
     python_callable=download.download_urls,
     dag=dag,
