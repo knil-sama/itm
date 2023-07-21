@@ -1,4 +1,4 @@
-from flask import make_response, send_file
+from flask import make_response
 import flask_restful
 import base64
 import api

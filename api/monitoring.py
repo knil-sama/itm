@@ -1,10 +1,4 @@
-from flask import make_response
 import flask_restful
-import matplotlib
-import matplotlib.pyplot as plt
-import datetime as dt
-import matplotlib.dates as md
-import io
 import api
 
 

@@ -4,9 +4,6 @@ All code must follow json api spec
 from flask import Flask
 from flask_restful import Api
 from flask_cors import CORS
-import json
-import os
-import logging
 
 from api.image import Image
 from api.images import Images

@@ -1,8 +1,6 @@
-import typing
 import numpy as np
 from PIL import Image
 import backend
-import os
 from io import BytesIO
 import base64
 
@@ -13,7 +11,6 @@ def load_event_grayscale(collection, event_id: str, grayscale: dict):
 
 def grayscale(**context):
     downloaded_images = context["task_instance"].xcom_pull(task_ids="download_image")
-    dict_gray_metadata = dict()
     for downloaded_image in downloaded_images:
         if downloaded_image["success"]:
             event = backend.EVENTS.find_one({"id": downloaded_image["event_id"]})

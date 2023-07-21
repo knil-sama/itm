@@ -1,13 +1,12 @@
-import typing
 import random
-import typing
 
 
 def generate_url() -> str:
     """
     Notes:
-        The url generate can false due to either because dim are too big (Invalid size) or dim are negative (page not found)
-        
+        The url generate can false due to either because dim are too big (Invalid size)
+        or dim are negative (page not found)
+
     Returns:
         Random url for picsum.photos
     """
@@ -16,7 +15,7 @@ def generate_url() -> str:
     return f"https://picsum.photos/{dim_width}/{dim_heigth}"
 
 
-def generate_urls(min_nb_urls: int = 0, max_nb_urls: int = 100) -> typing.List[str]:
+def generate_urls(min_nb_urls: int = 0, max_nb_urls: int = 100) -> list[str]:
     """
     Generate of list of urls with various size for image
 

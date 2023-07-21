@@ -1,5 +1,3 @@
-import pymongo
-import base64
 import backend
 import datetime as dt
 
