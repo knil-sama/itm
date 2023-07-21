@@ -1,11 +1,13 @@
 import base64
 from io import BytesIO
 from typing import Any
+
 import numpy as np
 import pymongo
 from PIL import Image
 
 import backend
+
 
 def load_event_grayscale(
     collection: pymongo.Collection,

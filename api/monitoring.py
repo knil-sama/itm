@@ -1,6 +1,7 @@
 from typing import Any, Literal, Self
 
 import flask_restful
+
 import api
 
 

@@ -1,4 +1,5 @@
 from typing import Literal, Self
+
 import flask_restful
 
 import api
