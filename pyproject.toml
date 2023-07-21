@@ -1,0 +1,45 @@
+[tool.ruff]
+
+select = ["E", "F", "W", "C901", "I", "N", "UP", "ANN", "ASYNC", "S", "BLE", "FBT", "B", "A", "COM", "C4", "DTZ", "T10", "EM", "EXE", "ISC", "ICN", "G", "INP", "PIE", "T20", "PYI", "RSE", "RET", "SLF", "SLOT", "SIM", "TID", "ARG", "PTH", "TD", "PD", "PL", "TRY", "FLY", "NPY", "AIR", "PERF", "RUF"]
+ignore = ["S104", "S311", "S324"]
+# hardcoded-bind-all-interfaces (S104)
+# S311 Standard pseudo-random generators are not suitable for cryptographic purposes
+# S324 Probable use of insecure hash functions in `hashlib`: `md5`
+# Allow autofix for all enabled rules (when `--fix`) is provided.
+fixable = ["ALL"]
+unfixable = []
+
+# Exclude a variety of commonly ignored directories.
+exclude = [
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".git-rewrite",
+    ".hg",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".pytype",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "venv",
+]
+per-file-ignores = {}
+
+# Same as Black.
+line-length = 88
+
+# Allow unused variables when underscore-prefixed.
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+
+# Assume Python 3.10.
+target-version = "py311"

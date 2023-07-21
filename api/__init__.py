@@ -1,6 +1,8 @@
 import os
-import pymongo
+from typing import Literal, Self
+
 import flask_restful
+import pymongo
 
 MONGO_INITDB_ROOT_USERNAME = os.environ["MONGO_INITDB_ROOT_USERNAME"]
 MONGO_INITDB_ROOT_PASSWORD = os.environ["MONGO_INITDB_ROOT_PASSWORD"]
@@ -17,7 +19,7 @@ class Index(flask_restful.Resource):
     itm api
     """
 
-    def get(self):
+    def get(self: Self) -> tuple[dict[str, str], Literal[200]]:
         """
         Returns:
             str: Hello world for people calling the api

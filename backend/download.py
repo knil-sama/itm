@@ -1,41 +1,58 @@
-import os
-import typing
-import uuid
 import datetime as dt
+import logging
+import pathlib
+import uuid
+from typing import Any
+
+import pymongo
 import requests
+
 import backend
 
+logger = logging.getLogger(__name__)
 
-def load_event(collection, event_id: str, url: str, image: str):
+
+def load_event(
+    collection: pymongo.Collection,
+    event_id: str,
+    url: str,
+    image: str,
+) -> None:
     collection.update(
         {"id": event_id},
-        {"$set": {"image": image, "url": url, "insert_time": dt.datetime.utcnow()}},
+        {
+            "$set": {
+                "image": image,
+                "url": url,
+                "insert_time": dt.datetime.now(dt.UTC),
+            },
+        },
         upsert=True,
     )
 
 
 def download_url(
-    url: str, save_directory: str, error_directory: str
-) -> typing.Tuple[str, bool, str]:
+    url: str,
+    save_directory: str,
+    error_directory: str,
+) -> tuple[str, bool, pathlib.Path]:
     url_uuid = uuid.uuid1()
     download_success = False
     try:
-        r = requests.get(url)
-        if r.status_code == 200:
-            download_success = True
-    except Exception as e:
-        print(e)
-    if download_success:
-        filepath = f"{save_directory}/{url_uuid}"
-        open(filepath, "wb").write(r.content)
-    else:
-        # write empty file to simplify branching logic
-        filepath = f"{error_directory}/{url_uuid}"
-        open(filepath, "w").write("")
+        response = requests.get(url, timeout=10)
+        response.raise_for_status()
+        download_success = True
+        filepath = pathlib.Path(f"{save_directory}/{url_uuid}")
+        filepath.open("wb").write(response.content)
+    except requests.HTTPError as e:
+        filepath = pathlib.Path(f"{error_directory}/{url_uuid}")
+        filepath.open("w").write("")
+        msg = f"got {e} written file in {filepath.absolute()}"
+        logger.exception(msg)
     return str(url_uuid), download_success, filepath
 
 
-def download_urls(**context):
+def download_urls(**context: dict[str, Any]) -> list[str]:
     generated_urls = context["task_instance"].xcom_pull(task_ids="generate_url")
     downloaded_images = []
     for url in generated_urls:
@@ -45,10 +62,10 @@ def download_urls(**context):
             error_directory=backend.BACKEND_ERROR_DIRECTORY,
         )
         image_string = ""
-        with open(result_filepath, "rb") as image_file:
-            image_string = image_file.read()
+        with result_filepath.open("rb") as image_file:
+            image_string = image_file.read().decode()
         downloaded_images.append({"success": success, "url": url, "event_id": url_uuid})
         load_event(backend.EVENTS, url_uuid, url, image_string)
         # Removed downloaded file
-        os.remove(result_filepath)
+        result_filepath.unlink()
     return downloaded_images

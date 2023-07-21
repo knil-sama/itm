@@ -1,4 +1,6 @@
 import os
+from typing import Any
+
 import pymongo
 
 BACKEND_DOWNLOAD_DIRECTORY = os.environ["BACKEND_DOWNLOAD_DIRECTORY"]
@@ -8,8 +10,8 @@ MONGO_INITDB_ROOT_USERNAME = os.environ["MONGO_INITDB_ROOT_USERNAME"]
 MONGO_INITDB_ROOT_PASSWORD = os.environ["MONGO_INITDB_ROOT_PASSWORD"]
 
 
-def get_collection(database_name: str, collection_name: str):
-    client = pymongo.MongoClient(
+def get_collection(database_name: str, collection_name: str) -> pymongo.Collection:
+    client: pymongo.MongoClient[dict[str, Any]] = pymongo.MongoClient(
         "mongodb://mongo:27017",
         username=MONGO_INITDB_ROOT_USERNAME,
         password=MONGO_INITDB_ROOT_PASSWORD,
