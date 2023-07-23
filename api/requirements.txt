@@ -1,8 +1,0 @@
-Flask-Cors
-Flask-HTTPAuth
-Flask-RESTful
-gunicorn
-matplotlib
-numpy
-pymongo
-pendulum

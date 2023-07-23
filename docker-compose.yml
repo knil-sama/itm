@@ -1,4 +1,4 @@
-#Stolen from great work of Matthieu "Puckel_" Roisil on https://github.com/puckel/docker-airflow
+# Stolen from great work of Matthieu "Puckel_" Roisil on https://github.com/puckel/docker-airflow
 version: '2.1'
 services:
     redis:
