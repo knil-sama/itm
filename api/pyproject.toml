@@ -1,0 +1,36 @@
+[tool.poetry]
+name = "api"
+version = "0.1.0"
+description = ""
+authors = ["knil-sama"]
+readme = "README.md"
+
+packages = [
+    {include = "api"}
+]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+numpy = "1.25.1"
+pymongo = "4.4.1"
+pendulum = "2.1.2"
+models =  {path = "../models", develop = true}
+fastapi = {version= "0.100.0", extras = ["all"]}
+
+
+[tool.poetry.group.test.dependencies]
+pytest = "7.4.0"
+pytest-env = "0.8.2"
+pytest-mock = "3.11.1"
+polyfactory = "2.6.3"
+pytest-cov = "4.1.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+env = [
+    "MONGO_INITDB_ROOT_USERNAME=test",
+    "MONGO_INITDB_ROOT_PASSWORD=test"
+]

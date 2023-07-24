@@ -1,0 +1,31 @@
+name: API
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  pre-commit:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-python@v3
+
+    - name: Install and configure Poetry
+      uses: snok/install-poetry@v1
+      with:
+        version: 1.5.1
+
+    - name: Run test
+      run: |
+        cd api
+        poetry lock --check
+        poetry install
+        poetry run pytest --cov-report xml:./coverage.xml --cov=api
+
+    - name: Get Cover
+      uses: orgoro/coverage@v3.1
+      with:
+          coverageFile: ./api/coverage.xml
+          token: ${{ secrets.GITHUB_TOKEN }}

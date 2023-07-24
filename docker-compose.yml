@@ -1,6 +1,14 @@
-#Stolen from great work of Matthieu "Puckel_" Roisil on https://github.com/puckel/docker-airflow
-version: '2.1'
+# Stolen from great work of Matthieu "Puckel_" Roisil on https://github.com/puckel/docker-airflow
+version: '3'
 services:
+    dev_container:
+        build:
+            context: .
+            dockerfile: .devcontainer/Dockerfile
+        volumes:
+            - ./:/workspace:rw
+        command: sleep infinity
+
     redis:
         image: 'redis:3.2.7'
         # command: redis-server --requirepass redispass
@@ -104,13 +112,15 @@ services:
             - ME_CONFIG_MONGODB_ADMINUSERNAME=root
             - ME_CONFIG_MONGODB_ADMINPASSWORD=example
 
-    flask_webserver:
-        build: ./api
-        command: gunicorn "application:create_app()" --bind 0.0.0.0:5000 --workers 4
+    api:
+        build:
+            context: ./
+            dockerfile: ./api/Dockerfile
+        command: python -m uvicorn api.application:app --reload --host 0.0.0.0
         depends_on:
             - mongo
         environment:
             - MONGO_INITDB_ROOT_USERNAME=root
             - MONGO_INITDB_ROOT_PASSWORD=example
         ports:
-            - "5000:5000"
+            - "8000:8000"

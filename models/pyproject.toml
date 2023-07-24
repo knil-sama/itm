@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "models"
+version = "0.1.0"
+description = ""
+authors = ["knil-sama <cols.knil@gmail.com>"]
+readme = "README.md"
+packages = [
+    {include = "models"},
+]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+pydantic = "^2.0.3"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
