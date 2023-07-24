@@ -6,8 +6,7 @@ authors = ["knil-sama"]
 readme = "README.md"
 
 packages = [
-    {include = "api"},
-    { include = "models", from = "../models" },
+    {include = "api"}
 ]
 
 [tool.poetry.dependencies]
@@ -15,7 +14,9 @@ python = "^3.11"
 numpy = "1.25.1"
 pymongo = "4.4.1"
 pendulum = "2.1.2"
+models =  {path = "../models", develop = true}
 fastapi = {version= "0.100.0", extras = ["all"]}
+
 
 [tool.poetry.group.test.dependencies]
 pytest = "7.4.0"

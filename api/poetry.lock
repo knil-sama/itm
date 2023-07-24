@@ -433,6 +433,22 @@ files = [
 ]
 
 [[package]]
+name = "models"
+version = "0.1.0"
+description = ""
+optional = false
+python-versions = "^3.11"
+files = []
+develop = true
+
+[package.dependencies]
+pydantic = "^2.0.3"
+
+[package.source]
+type = "directory"
+url = "../models"
+
+[[package]]
 name = "numpy"
 version = "1.25.1"
 description = "Fundamental package for array computing in Python"
@@ -1340,4 +1356,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "f785fadee11ebf75175cf26316b1406c0daf3429d12d7946c013f2d354815fca"
+content-hash = "047d26331e6f03fc66498888a541cf440db987b02839149258dd8e2e18080ccb"

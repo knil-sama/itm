@@ -8,6 +8,7 @@ services:
         volumes:
             - ./:/workspace:rw
         command: sleep infinity
+
     redis:
         image: 'redis:3.2.7'
         # command: redis-server --requirepass redispass
@@ -111,15 +112,15 @@ services:
             - ME_CONFIG_MONGODB_ADMINUSERNAME=root
             - ME_CONFIG_MONGODB_ADMINPASSWORD=example
 
-    flask_webserver:
+    api:
         build:
             context: ./
             dockerfile: ./api/Dockerfile
-        command: python -m api.application
+        command: python -m uvicorn api.application:app --reload --host 0.0.0.0
         depends_on:
             - mongo
         environment:
             - MONGO_INITDB_ROOT_USERNAME=root
             - MONGO_INITDB_ROOT_PASSWORD=example
         ports:
-            - "5000:5000"
+            - "8000:8000"
