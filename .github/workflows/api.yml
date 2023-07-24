@@ -22,7 +22,7 @@ jobs:
         cd api
         poetry lock --check
         poetry install
-        poetry run pytest --cov-report xml:./coverage.xml
+        poetry run pytest --cov-report xml:./coverage.xml --cov=api
 
     - name: Get Cover
       uses: orgoro/coverage@v3.1
