@@ -1,4 +1,4 @@
-name: pre-commit
+name: API
 
 on:
   pull_request:
@@ -19,6 +19,7 @@ jobs:
 
     - name: Run test
       run: |
+        cd api
         poetry lock --check
         poetry install
         poetry run pytest
