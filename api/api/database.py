@@ -20,18 +20,18 @@ def get_image(
     client: pymongo.MongoClient = MONGO_CLIENT,
 ) -> Image | None:
     mongo_object = client["image_bank"].images.find_one({"id": image_id})
-    return Image.parse_object(mongo_object)
+    return Image.parse_raw(mongo_object)
 
 
 def get_images(client: pymongo.MongoClient = MONGO_CLIENT) -> list[Image]:
     return [
-        Image.parse_object(mongo_object)
+        Image.parse_raw(mongo_object)
         for mongo_object in client["image_bank"].images.find({}, {"id": 1})
     ]
 
 
 def get_monitoring(client: pymongo.MongoClient = MONGO_CLIENT) -> list[Monitoring]:
     return [
-        Monitoring.parse_object(mongo_object)
+        Monitoring.parse_raw(mongo_object)
         for mongo_object in client["image_bank"].monitoring.find({})
     ]

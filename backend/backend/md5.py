@@ -3,6 +3,7 @@ import hashlib
 import pymongo
 
 import backend
+from backend.backend import EventStatus
 
 
 def load_event_md5(
@@ -15,7 +16,7 @@ def load_event_md5(
 
 def md5(downloaded_images: list[dict]) -> None:
     for downloaded_image in downloaded_images:
-        if downloaded_image["success"]:
+        if downloaded_image["success"] == EventStatus.SUCCESS:
             event = backend.EVENTS.find_one({"id": downloaded_image["event_id"]})
             image_md5 = hashlib.md5(event["image"]).hexdigest()
             load_event_md5(backend.EVENTS, downloaded_image["event_id"], image_md5)

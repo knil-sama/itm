@@ -17,8 +17,8 @@ RUN cd backend && poetry install --without test && rm -rf $POETRY_CACHE_DIR
 # The runtime image, used to just run the code provided its virtual environment
 FROM python:3.11-slim-buster as runtime
 
-ENV BACKEND_DIRECTORY ${AIRFLOW_HOME}/backend
-ENV BACKEND_DATA_DIRECTORY ${AIRFLOW_HOME}/data
+ENV BACKEND_DIRECTORY /workspace/backend
+ENV BACKEND_DATA_DIRECTORY ${BACKEND_DIRECTORY}/data
 ENV BACKEND_DOWNLOAD_DIRECTORY ${BACKEND_DATA_DIRECTORY}/download
 ENV BACKEND_ERROR_DIRECTORY ${BACKEND_DATA_DIRECTORY}/download_error
 ENV BACKEND_GRAYSCALE_DIRECTORY ${BACKEND_DATA_DIRECTORY}/grayscale
@@ -32,5 +32,9 @@ COPY --from=builder ${VIRTUAL_ENV} ${VIRTUAL_ENV}
 WORKDIR /workspace/backend
 COPY ./backend/backend/ ./backend
 COPY ./models/models/ ./models
+RUN mkdir -p ${BACKEND_DATA_DIRECTORY}
+RUN mkdir -p ${BACKEND_DOWNLOAD_DIRECTORY}
+RUN mkdir -p ${BACKEND_ERROR_DIRECTORY}
+RUN mkdir -p ${BACKEND_GRAYSCALE_DIRECTORY}
 #COPY api /worspace/api
 # COPY ./model /

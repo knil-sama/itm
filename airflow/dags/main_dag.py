@@ -38,15 +38,19 @@ with DAG(
         return grayscale.grayscale(downloaded_images)
 
     @task
-    def load_result_image(downloaded_images: list[dict]) -> None:
+    def load_result_image(downloaded_images: list[dict], *_) -> None:  # noqa: ANN002
         return load_result.load_result(downloaded_images)
 
     @task
-    def update_monitoring_image(downloaded_images: list[dict]) -> None:
+    def update_monitoring_image(
+        downloaded_images: list[dict],
+        _,  # noqa: ANN001
+    ) -> None:
         execution_date = "{{ dag_run.logical_date }}"
         return update_monitoring.update_monitoring(downloaded_images, execution_date)
 
-    downloaded_images = download_image(generate_urls())
-    md5_image(downloaded_images)
-    grayscale_image(downloaded_images)
-    update_monitoring_image(load_result_image(downloaded_images))
+    task_download_image = download_image(generate_urls())
+    task_md5 = md5_image(task_download_image)
+    task_grayscale = grayscale_image(task_download_image)
+    task_load = load_result_image(task_download_image, task_md5, task_grayscale)
+    update_monitoring_image(task_download_image, task_load)

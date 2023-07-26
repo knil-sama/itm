@@ -10,8 +10,8 @@ def generate_url() -> str:
     Returns:
         Random url for picsum.photos
     """
-    dim_width = random.randint(-1, 10_000)
-    dim_heigth = random.randint(-1, 10_000)
+    dim_width = random.randint(-1, 1_000)
+    dim_heigth = random.randint(-1, 1_000)
     return f"https://picsum.photos/{dim_width}/{dim_heigth}"
 
 

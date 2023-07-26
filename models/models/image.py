@@ -3,8 +3,8 @@ import pydantic
 
 class Image(pydantic.BaseModel):
     id: str  # noqa: A003
-    content: str
-    grayscale: str
+    content: bytes
+    grayscale: bytes
     height: pydantic.types.PositiveInt
     width: pydantic.types.PositiveInt
 

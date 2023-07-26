@@ -1,4 +1,4 @@
-import base64
+import io
 from io import BytesIO
 from typing import Any
 
@@ -19,7 +19,7 @@ def load_event_grayscale(
 
 def grayscale(downloaded_images: list[dict]) -> None:
     for downloaded_image in downloaded_images:
-        if downloaded_image["success"]:
+        if downloaded_image["success"] == backend.EventStatus.SUCCESS:
             event = backend.EVENTS.find_one({"id": downloaded_image["event_id"]})
             gray_metadata = img_to_gray(event["image"])
             load_event_grayscale(
@@ -29,10 +29,10 @@ def grayscale(downloaded_images: list[dict]) -> None:
             )
 
 
-def img_to_gray(image_string: str) -> dict[str, Any]:
+def img_to_gray(image: bytes) -> dict[str, Any]:
     # https://stackoverflow.com/questions/12201577/how-can-i-convert-an-rgb-image-into-grayscale-in-python
-    image_file = BytesIO(base64.b64decode(base64.b64encode(image_string)))
-    rgb = np.array(Image.open(image_file))
+
+    rgb = np.array(Image.open(io.BytesIO(image)))
     r, g, b = rgb[:, :, 0], rgb[:, :, 1], rgb[:, :, 2]
     gray = np.mean([r, g, b], axis=0)
     # fromarray(gray, "L") not working
@@ -42,7 +42,7 @@ def img_to_gray(image_string: str) -> dict[str, Any]:
     gray_img.save(buffered, format="png")
     width, height = gray_img.size
     return {
-        "grayscale": base64.b64encode(buffered.getvalue()),
+        "grayscale": buffered.getvalue(),
         "width": width,
         "height": height,
     }

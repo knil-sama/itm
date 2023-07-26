@@ -7,7 +7,7 @@ import backend
 
 def load_image(collection: pymongo.collection.Collection, event: dict) -> None:
     collection.update_one(
-        {"md5": event["md5"]},
+        {"id": event["id"]},
         {
             "$set": {
                 "image": event["image"],
@@ -37,7 +37,7 @@ def get_event(
 
 def load_result(downloaded_images: list[dict]) -> None:
     for downloaded_image in downloaded_images:
-        if downloaded_image["success"]:
+        if downloaded_image["success"] == backend.EventStatus.SUCCESS:
             event = get_event(downloaded_image["event_id"])
             load_image(backend.IMAGES, event)
             # drop event
