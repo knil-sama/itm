@@ -2,7 +2,6 @@ import datetime as dt
 import logging
 import pathlib
 import uuid
-from typing import Any
 
 import pymongo
 import requests
@@ -13,12 +12,12 @@ logger = logging.getLogger(__name__)
 
 
 def load_event(
-    collection: pymongo.Collection,
+    collection: pymongo.collection.Collection,
     event_id: str,
     url: str,
     image: str,
 ) -> None:
-    collection.update(
+    collection.update_one(
         {"id": event_id},
         {
             "$set": {
@@ -33,8 +32,8 @@ def load_event(
 
 def download_url(
     url: str,
-    save_directory: str,
-    error_directory: str,
+    save_directory: pathlib.Path,
+    error_directory: pathlib.Path,
 ) -> tuple[str, bool, pathlib.Path]:
     url_uuid = uuid.uuid1()
     download_success = False
@@ -42,18 +41,17 @@ def download_url(
         response = requests.get(url, timeout=10)
         response.raise_for_status()
         download_success = True
-        filepath = pathlib.Path(f"{save_directory}/{url_uuid}")
+        filepath = save_directory / pathlib.Path(str(url_uuid))
         filepath.open("wb").write(response.content)
     except requests.HTTPError as e:
-        filepath = pathlib.Path(f"{error_directory}/{url_uuid}")
+        filepath = error_directory / pathlib.Path(str(url_uuid))
         filepath.open("w").write("")
         msg = f"got {e} written file in {filepath.absolute()}"
         logger.exception(msg)
     return str(url_uuid), download_success, filepath
 
 
-def download_urls(**context: dict[str, Any]) -> list[str]:
-    generated_urls = context["task_instance"].xcom_pull(task_ids="generate_url")
+def download_urls(generated_urls: list[str]) -> list[dict]:
     downloaded_images = []
     for url in generated_urls:
         url_uuid, success, result_filepath = download_url(

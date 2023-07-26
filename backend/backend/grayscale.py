@@ -10,15 +10,14 @@ import backend
 
 
 def load_event_grayscale(
-    collection: pymongo.Collection,
+    collection: pymongo.collection.Collection,
     event_id: str,
     grayscale: dict,
 ) -> None:
-    collection.update({"id": event_id}, {"$set": grayscale}, upsert=True)
+    collection.update_one({"id": event_id}, {"$set": grayscale}, upsert=True)
 
 
-def grayscale(**context: dict[str, Any]) -> None:
-    downloaded_images = context["task_instance"].xcom_pull(task_ids="download_image")
+def grayscale(downloaded_images: list[dict]) -> None:
     for downloaded_image in downloaded_images:
         if downloaded_image["success"]:
             event = backend.EVENTS.find_one({"id": downloaded_image["event_id"]})

@@ -1,13 +1,6 @@
 # Stolen from great work of Matthieu "Puckel_" Roisil on https://github.com/puckel/docker-airflow
 version: '3'
 services:
-    dev_container:
-        build:
-            context: .
-            dockerfile: .devcontainer/Dockerfile
-        volumes:
-            - ./:/workspace:rw
-        command: sleep infinity
 
     redis:
         image: 'redis:3.2.7'
@@ -25,14 +18,19 @@ services:
         #     - ./pgdata:/var/lib/postgresql/data/pgdata
 
     airflow_webserver:
-        build: ./backend
+        build:
+            context: .
+            dockerfile: ./backend/Dockerfile
         restart: always
+        volumes:
+          - ./airflow/dags:/workspace/airflow/dags:r
+          - ./airflow/airflow.cfg:/workspace/airflow/airflow.cfg:r
+          - ./airflow/webserver_config.py:/workspace/airflow/webserver_config.py:r
         depends_on:
             - postgres
             - redis
-        env_file:
-            - airflow.env
         environment:
+            - AIRFLOW_HOME=/workspace/airflow
             - MONGO_INITDB_ROOT_USERNAME=root
             - MONGO_INITDB_ROOT_PASSWORD=example
             # - REDIS_PASSWORD=redispass
@@ -41,58 +39,69 @@ services:
         command: bash -c "airflow db init && airflow users create --password test --username admin --firstname Peter --lastname Parker --role Admin --email spiderman@superhero.org && airflow webserver"
 
     flower:
-        build: ./backend
+        build:
+            context: .
+            dockerfile: ./backend/Dockerfile
         restart: always
         depends_on:
             - redis
             - postgres
             - worker_a
             - worker_b
-        env_file:
-            - airflow.env
+        volumes:
+          - ./airflow/dags:/workspace/airflow/dags
+          - ./airflow/airflow.cfg:/workspace/airflow/airflow.cfg:r
+        environment:
+            - AIRFLOW_HOME=/workspace/airflow
         ports:
             - "5555:5555"
         command: bash -c "airflow celery flower"
 
     scheduler:
-        build: ./backend
+        build:
+            context: .
+            dockerfile: ./backend/Dockerfile
         restart: always
         depends_on:
             - airflow_webserver
             - flower
         volumes:
-            - ./dags:/usr/local/airflow/dags
-        env_file:
-            - airflow.env
+          - ./airflow/dags:/workspace/airflow/dags
+          - ./airflow/airflow.cfg:/workspace/airflow/airflow.cfg:r
         environment:
+            - AIRFLOW_HOME=/workspace/airflow
             - MONGO_INITDB_ROOT_USERNAME=root
             - MONGO_INITDB_ROOT_PASSWORD=example
         command: bash -c "airflow scheduler"
 
     worker_a:
-        build: ./backend/
+        build:
+            context: .
+            dockerfile: ./backend/Dockerfile
         restart: always
         depends_on:
             - mongo
         volumes:
-            - ./dags:/usr/local/airflow/dags
-        env_file:
-            - airflow.env
+          - ./airflow/dags:/workspace/airflow/dags
+          - ./airflow/airflow.cfg:/workspace/airflow/airflow.cfg:r
         environment:
+            - AIRFLOW_HOME=/workspace/airflow
             - MONGO_INITDB_ROOT_USERNAME=root
             - MONGO_INITDB_ROOT_PASSWORD=example
         command: bash -c "airflow celery worker"
 
     worker_b:
-        build: ./backend/
+        build:
+            context: .
+            dockerfile: ./backend/Dockerfile
         restart: always
         depends_on:
             - mongo
         volumes:
-            - ./dags:/usr/local/airflow/dags
-        env_file:
-            - airflow.env
+          - ./airflow/dags:/workspace/airflow/dags
+          - ./airflow/airflow.cfg:/workspace/airflow/airflow.cfg:r
         environment:
+            - AIRFLOW_HOME=/workspace/airflow
             - MONGO_INITDB_ROOT_USERNAME=root
             - MONGO_INITDB_ROOT_PASSWORD=example
         command: bash -c "airflow celery worker"
