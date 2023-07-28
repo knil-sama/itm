@@ -3,6 +3,7 @@ import datetime as dt
 import pymongo
 
 import backend
+from models.event import EventStatus
 
 
 def load_image(collection: pymongo.collection.Collection, event: dict) -> None:
@@ -37,7 +38,7 @@ def get_event(
 
 def load_result(downloaded_images: list[dict]) -> None:
     for downloaded_image in downloaded_images:
-        if downloaded_image["success"] == backend.EventStatus.SUCCESS:
+        if downloaded_image["success"] == EventStatus.SUCCESS:
             event = get_event(downloaded_image["event_id"])
             load_image(backend.IMAGES, event)
             # drop event

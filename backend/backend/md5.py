@@ -3,7 +3,7 @@ import hashlib
 import pymongo
 
 import backend
-from backend.backend import EventStatus
+from models.event import EventStatus
 
 
 def load_event_md5(

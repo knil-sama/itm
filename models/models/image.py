@@ -10,3 +10,11 @@ class Image(pydantic.BaseModel):
 
 
 # insert_time": dt.datetime.now(dt.UTC),
+
+
+class PartialImage(pydantic.BaseModel):
+    id: str | None  # noqa: A003
+    content: bytes | None
+    grayscale: bytes | None
+    height: pydantic.types.PositiveInt | None
+    width: pydantic.types.PositiveInt | None

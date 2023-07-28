@@ -7,6 +7,7 @@ import pymongo
 from PIL import Image
 
 import backend
+from models.event import EventStatus
 
 
 def load_event_grayscale(
@@ -19,7 +20,7 @@ def load_event_grayscale(
 
 def grayscale(downloaded_images: list[dict]) -> None:
     for downloaded_image in downloaded_images:
-        if downloaded_image["success"] == backend.EventStatus.SUCCESS:
+        if downloaded_image["success"] == EventStatus.SUCCESS:
             event = backend.EVENTS.find_one({"id": downloaded_image["event_id"]})
             gray_metadata = img_to_gray(event["image"])
             load_event_grayscale(

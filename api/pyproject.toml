@@ -15,7 +15,7 @@ numpy = "1.25.1"
 pymongo = "4.4.1"
 pendulum = "2.1.2"
 models =  {path = "../models", develop = true}
-fastapi = {version= "0.100.0", extras = ["all"]}
+fastapi = {version= "0.86", extras = ["all"]} # https://github.com/Lightning-AI/lightning/issues/17106
 
 
 [tool.poetry.group.test.dependencies]

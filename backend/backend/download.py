@@ -1,31 +1,26 @@
 import datetime as dt
 import logging
-import pathlib
 import uuid
 
 import pymongo
 import requests
 
 import backend
-from backend.backend import EventStatus
+from models.event import Event, EventStatus
+from models.image import PartialImage
+from models.url import Url
 
 logger = logging.getLogger(__name__)
 
 
-def load_event(
-    collection: pymongo.collection.Collection,
-    event_id: str,
-    url: str,
-    status: EventStatus,
-    image: bytes,
-) -> None:
+def load_event(collection: pymongo.collection.Collection, event: Event) -> None:
     collection.update_one(
-        {"id": event_id},
+        {"id": event.id},
         {
             "$set": {
-                "image": image,
-                "url": url,
-                "status": str(status),
+                "image": event.part,
+                "url": event.url,
+                "status": str(event.status),
                 "insert_time": dt.datetime.now(dt.UTC),
             },
         },
@@ -33,40 +28,33 @@ def load_event(
     )
 
 
-def download_url(
-    url: str,
-    save_directory: pathlib.Path,
-    error_directory: pathlib.Path,
-) -> tuple[str, EventStatus, pathlib.Path]:
+def download_url(url: Url) -> Event:
     url_uuid = uuid.uuid1()
     download_status: EventStatus = EventStatus.ERROR
+    exception_log = None
+    partial_image = None
     try:
-        response = requests.get(url, timeout=10)
+        response = requests.get(str(url.url), timeout=10)
         response.raise_for_status()
         download_status = EventStatus.SUCCESS
-        filepath = save_directory / pathlib.Path(str(url_uuid))
-        filepath.open("wb").write(response.content)
+        partial_image = PartialImage(content=response.content)
     except requests.HTTPError as e:
-        filepath = error_directory / pathlib.Path(str(url_uuid))
-        filepath.open("w").write("")
-        msg = f"got {e} written file in {filepath.absolute()}"
+        msg = f"got {e} while downloading url"
         logger.exception(msg)
-    return str(url_uuid), download_status, filepath
+        exception_log = msg
+    return Event(
+        id=url_uuid,
+        url=str(url.url),
+        status=download_status,
+        exception_log=exception_log,
+        partial_image=partial_image,
+    )
 
 
-def download_urls(generated_urls: list[str]) -> list[dict]:
+def download_urls(generated_urls: list[Url]) -> list[Event]:
     downloaded_images = []
     for url in generated_urls:
-        url_uuid, status, result_filepath = download_url(
-            url=url.strip(),
-            save_directory=backend.BACKEND_DOWNLOAD_DIRECTORY,
-            error_directory=backend.BACKEND_ERROR_DIRECTORY,
-        )
-        image: bytes = None
-        with result_filepath.open("rb") as image_file:
-            image = image_file.read()
-        downloaded_images.append({"status": status, "url": url, "event_id": url_uuid})
-        load_event(backend.EVENTS, url_uuid, url, status, image)
-        # Removed downloaded file
-        result_filepath.unlink()
+        event = download_url(url=url)
+        downloaded_images.append(event)
+        load_event(backend.EVENTS, event)
     return downloaded_images

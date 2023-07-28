@@ -1,6 +1,5 @@
 import os
 import pathlib
-from enum import StrEnum, auto
 from typing import Any
 
 import pymongo
@@ -28,8 +27,3 @@ def get_collection(
 IMAGES = get_collection("image_bank", "images")
 IMAGES_MONITORING = get_collection("image_bank", "monitoring")
 EVENTS = get_collection("event", "images")
-
-
-class EventStatus(StrEnum):
-    SUCCESS = auto()
-    ERROR = auto()
