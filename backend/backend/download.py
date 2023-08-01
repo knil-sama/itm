@@ -1,31 +1,14 @@
-import datetime as dt
 import logging
 import uuid
 
-import pymongo
 import requests
 
-import backend
+from backend.database import create_event
 from models.event import Event, EventStatus
 from models.image import PartialImage
 from models.url import Url
 
 logger = logging.getLogger(__name__)
-
-
-def load_event(collection: pymongo.collection.Collection, event: Event) -> None:
-    collection.update_one(
-        {"id": event.id},
-        {
-            "$set": {
-                "image": event.part,
-                "url": event.url,
-                "status": str(event.status),
-                "insert_time": dt.datetime.now(dt.UTC),
-            },
-        },
-        upsert=True,
-    )
 
 
 def download_url(url: Url) -> Event:
@@ -56,5 +39,5 @@ def download_urls(generated_urls: list[Url]) -> list[Event]:
     for url in generated_urls:
         event = download_url(url=url)
         downloaded_images.append(event)
-        load_event(backend.EVENTS, event)
+        create_event(event)
     return downloaded_images

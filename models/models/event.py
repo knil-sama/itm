@@ -1,3 +1,4 @@
+from datetime import UTC, datetime
 from enum import StrEnum, auto
 from uuid import UUID
 
@@ -22,6 +23,7 @@ class Event(BaseModel):
     status: EventStatus
     exception_log: str | None
     partial_image: PartialImage | None
+    created_at: datetime = datetime.now(UTC)
 
     @root_validator()
     def check_we_either_get_log_or_image(
@@ -41,6 +43,3 @@ class Event(BaseModel):
             msg = "When status is success we should have a partial image"
             raise ValueError(msg)
         return values
-
-
-# insert_time": dt.datetime.now(dt.UTC),

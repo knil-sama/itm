@@ -1,3 +1,5 @@
+from datetime import UTC, datetime
+
 import pydantic
 
 
@@ -7,6 +9,7 @@ class Image(pydantic.BaseModel):
     grayscale: bytes
     height: pydantic.types.PositiveInt
     width: pydantic.types.PositiveInt
+    created_at: datetime = datetime.now(UTC)
 
 
 # insert_time": dt.datetime.now(dt.UTC),

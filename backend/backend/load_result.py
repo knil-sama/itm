@@ -1,45 +1,13 @@
-import datetime as dt
-
-import pymongo
-
-import backend
-from models.event import EventStatus
+from backend.database import create_image, drop_event, get_event
+from models.event import Event, EventStatus
+from models.image import Image
 
 
-def load_image(collection: pymongo.collection.Collection, event: dict) -> None:
-    collection.update_one(
-        {"id": event["id"]},
-        {
-            "$set": {
-                "image": event["image"],
-                "grayscale": event["grayscale"],
-                "height": event["height"],
-                "width": event["width"],
-                "insert_time": dt.datetime.now(dt.UTC),
-            },
-        },
-        upsert=True,
-    )
-
-
-def drop_event(
-    event_id: str,
-    event_collection: pymongo.collection.Collection = backend.EVENTS,
-) -> None:
-    event_collection.delete_one({"id": event_id})
-
-
-def get_event(
-    event_id: str,
-    event_collection: pymongo.collection.Collection = backend.EVENTS,
-) -> dict:
-    return event_collection.find_one({"id": event_id})
-
-
-def load_result(downloaded_images: list[dict]) -> None:
+def load_result(downloaded_images: list[Event]) -> None:
     for downloaded_image in downloaded_images:
-        if downloaded_image["success"] == EventStatus.SUCCESS:
-            event = get_event(downloaded_image["event_id"])
-            load_image(backend.IMAGES, event)
+        if downloaded_image.status == EventStatus.SUCCESS:
+            event = get_event(downloaded_image.id)
+            image = Image.parse_obj(event.partial_image.dict(exclude_none=True))
+            create_image(image)
             # drop event
-            drop_event(downloaded_image["event_id"])
+            drop_event(downloaded_image.id)

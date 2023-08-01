@@ -42,6 +42,6 @@ def test_download_urls(mocker, request):
             partial_image=PartialImage(content=expected_image),
         ),
     )
-    mocker.patch("backend.download.load_event", return_value=MagicMock())
+    mocker.patch("backend.download.create_event", return_value=MagicMock())
     results = download_urls([Url(url="http://fake_urls.com")])
     assert 1 == len(results)
