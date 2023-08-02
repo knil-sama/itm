@@ -10,7 +10,7 @@ packages = [
 
 [tool.poetry.dependencies]
 python = "^3.11"
-pydantic = "^2.0.3"
+pydantic = "1.10.7" # need to limit it because of airflow 2.6 not supporting it properly
 
 
 [build-system]

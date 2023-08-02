@@ -30,7 +30,7 @@ def test_read_image(mocker):
     mocker.patch("api.application.get_image", return_value=mock_image)
     response = client.get("/image/fake_id")
     assert response.status_code == 200
-    assert response.content.decode() == mock_image.grayscale
+    assert response.content == mock_image.grayscale
 
 
 def test_read_image_not_found(mocker):
