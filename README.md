@@ -17,7 +17,7 @@ Dags run every 5 minutes:
 
 # Usage
 
-`docker-compose up`
+`docker-compose up` or `docker compose up`
 
 then go to [http://0.0.0.0:8080](http://0.0.0.0:8080)
 
