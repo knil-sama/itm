@@ -10,6 +10,8 @@ from backend import (
     md5,
     update_monitoring,
 )
+from models.event import Event
+from models.url import Url
 
 with DAG(
     "main_dag",
@@ -22,23 +24,23 @@ with DAG(
 ) as dag:
 
     @task
-    def generate_urls() -> list[str]:
+    def generate_urls() -> list[Url]:
         return generate.generate_urls()
 
     @task
-    def download_image(generated_urls: list[str]) -> list[dict]:
+    def download_image(generated_urls: list[Event]) -> list[dict]:
         return download.download_urls(generated_urls)
 
     @task
-    def md5_image(downloaded_images: list[dict]) -> None:
+    def md5_image(downloaded_images: list[Event]) -> None:
         return md5.md5(downloaded_images)
 
     @task
-    def grayscale_image(downloaded_images: list[dict]) -> None:
+    def grayscale_image(downloaded_images: list[Event]) -> None:
         return grayscale.grayscale(downloaded_images)
 
     @task
-    def load_result_image(downloaded_images: list[dict], *_) -> None:  # noqa: ANN002
+    def load_result_image(downloaded_images: list[Event], *_) -> None:  # noqa: ANN002
         return load_result.load_result(downloaded_images)
 
     @task

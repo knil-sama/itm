@@ -1,13 +1,13 @@
 # TODO(clement): refactor into a "storage" layer
 # https://github.com/knil-sama/itm/issues/14
 
-import datetime as dt
+from datetime import UTC, datetime
 from uuid import UUID
 
 import pymongo
 
 import backend
-from models.event import Event
+from models.event import Event, EventStatus
 from models.image import Image, PartialImage
 
 
@@ -44,7 +44,7 @@ def create_event(
             "url": event.url,
             "status": str(event.status),
             "created_at": event.created_at,
-            "updated_at": dt.datetime.now(dt.UTC),
+            "updated_at": datetime.now(UTC),
             "partial_image": event.partial_image.dict(exclude_none=True),
         },
     )
@@ -59,7 +59,7 @@ def upsert_event(
         {"id": event_id},
         {
             "$set": {
-                "updated_at": dt.datetime.now(dt.UTC),
+                "updated_at": datetime.now(UTC),
                 "partial_image": current_partial_image.dict(exclude_none=True),
             },
         },
@@ -72,3 +72,15 @@ def drop_event(
     event_collection: pymongo.collection.Collection = backend.EVENTS,
 ) -> None:
     event_collection.delete_one({"id": event_id})
+
+
+def upsert_monitoring(
+    event_status: EventStatus,
+    execution_date: str,
+    collection: pymongo.collection.Collection = backend.IMAGES_MONITORING,
+) -> None:
+    collection.find_one_and_update(
+        {"execution_date": execution_date},
+        {"$inc": {event_status: 1}},
+        upsert=True,
+    )

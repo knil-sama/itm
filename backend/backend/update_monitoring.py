@@ -1,18 +1,7 @@
-import backend
-from models.event import EventStatus
+from backend.database import upsert_monitoring
+from models.event import Event
 
 
-def update_monitoring(downloaded_images: list[dict], execution_date: str) -> None:
+def update_monitoring(downloaded_images: list[Event], execution_date: str) -> None:
     for downloaded_image in downloaded_images:
-        if downloaded_image["success"] == EventStatus.SUCCESS:
-            backend.IMAGES_MONITORING.find_one_and_update(
-                {"execution_date": execution_date},
-                {"$inc": {"success": 1, "error": 0}},
-                upsert=True,
-            )
-        else:
-            backend.IMAGES_MONITORING.find_one_and_update(
-                {"execution_date": execution_date},
-                {"$inc": {"success": 0, "error": 1}},
-                upsert=True,
-            )
+        upsert_monitoring(downloaded_image.status, execution_date)
