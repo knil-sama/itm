@@ -1,4 +1,5 @@
 from datetime import UTC, datetime
+from uuid import UUID
 
 import pydantic
 
@@ -11,8 +12,8 @@ class Image(pydantic.BaseModel):
     width: pydantic.types.PositiveInt
     created_at: datetime = datetime.now(UTC)
 
-
-# insert_time": dt.datetime.now(dt.UTC),
+    class Config:
+        allow_mutation = False
 
 
 class PartialImage(pydantic.BaseModel):
@@ -21,3 +22,7 @@ class PartialImage(pydantic.BaseModel):
     grayscale: bytes | None
     height: pydantic.types.PositiveInt | None
     width: pydantic.types.PositiveInt | None
+    event_id: UUID | None
+
+    class Config:
+        allow_mutation = False

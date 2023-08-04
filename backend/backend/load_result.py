@@ -1,13 +1,21 @@
-from backend.database import create_image, drop_event, get_event
+from backend.database import (
+    create_image,
+    drop_event,
+    drop_partial_image,
+    get_partial_image,
+)
 from models.event import Event, EventStatus
 from models.image import Image
 
 
-def load_result(downloaded_images: list[Event]) -> None:
-    for downloaded_image in downloaded_images:
-        if downloaded_image.status == EventStatus.SUCCESS:
-            event = get_event(downloaded_image.id)
-            image = Image.parse_obj(event.partial_image.dict(exclude_none=True))
+def load_result(events: list[Event]) -> None:
+    for event in events:
+        if event.status == EventStatus.SUCCESS:
+            partial_image = get_partial_image(event.id)
+            partial_image_dict = partial_image.dict(exclude_none=True)
+            del partial_image_dict["event_id"]
+            image = Image.parse_obj(partial_image_dict)
             create_image(image)
             # drop event
-            drop_event(downloaded_image.id)
+            drop_event(event.id)
+            drop_partial_image(event.id)

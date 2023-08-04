@@ -1,9 +1,9 @@
 import random
 
-from models.url import Url
+from models.url import UrlPicsum
 
 
-def generate_url() -> Url:
+def generate_url() -> UrlPicsum:
     """
     Notes:
         The url generate can false due to either because dim are too big (Invalid size)
@@ -12,12 +12,16 @@ def generate_url() -> Url:
     Returns:
         Random url for picsum.photos
     """
-    dim_width = random.randint(-1, 1_000)
-    dim_heigth = random.randint(-1, 1_000)
-    return Url(url=f"https://picsum.photos/{dim_width}/{dim_heigth}")
+    dim_width = random.randint(1, 1_000)
+    dim_height = random.randint(1, 1_000)
+    return UrlPicsum(
+        url=f"https://picsum.photos/{dim_width}/{dim_height}",
+        width=dim_width,
+        height=dim_height,
+    )
 
 
-def generate_urls(min_nb_urls: int = 1, max_nb_urls: int = 100) -> list[Url]:
+def generate_urls(min_nb_urls: int = 1, max_nb_urls: int = 100) -> list[UrlPicsum]:
     """
     Generate of list of urls with various size for image
 

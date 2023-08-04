@@ -1,10 +1,10 @@
 from backend.generate import generate_url, generate_urls
-from models.url import Url
+from models.url import UrlPicsum
 import pytest
 
 
 def test_generate_url():
-    assert isinstance(generate_url(), Url)
+    assert isinstance(generate_url(), UrlPicsum)
 
 
 def test_generate_urls():

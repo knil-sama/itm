@@ -9,7 +9,6 @@ from pydantic import (
 )
 
 # root_validator is changed to model_validator in v2
-from models.image import PartialImage
 
 
 class EventStatus(StrEnum):
@@ -22,7 +21,6 @@ class Event(BaseModel):
     url: AnyHttpUrl
     status: EventStatus
     exception_log: str | None
-    partial_image: PartialImage | None
     created_at: datetime = datetime.now(UTC)
 
     @root_validator()
@@ -39,7 +37,7 @@ class Event(BaseModel):
         ):
             msg = "When status is success we can`t log exception"
             raise ValueError(msg)
-        if values["partial_image"] is None and values["status"] == EventStatus.SUCCESS:
-            msg = "When status is success we should have a partial image"
-            raise ValueError(msg)
         return values
+
+    class Config:
+        allow_mutation = False

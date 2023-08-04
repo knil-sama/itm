@@ -11,7 +11,7 @@ from backend import (
     update_monitoring,
 )
 from models.event import Event
-from models.url import Url
+from models.url import UrlPicsum
 
 with DAG(
     "main_dag",
@@ -24,35 +24,48 @@ with DAG(
 ) as dag:
 
     @task
-    def generate_urls() -> list[Url]:
-        return generate.generate_urls()
+    def generate_urls() -> list[str]:
+        return [
+            url.json() for url in generate.generate_urls()
+        ]  # should use model_dump_json() in v2
 
     @task
-    def download_image(generated_urls: list[Event]) -> list[dict]:
-        return download.download_urls(generated_urls)
+    def download_image(generated_urls: list[str]) -> list[str]:
+        pydantic_generated_urls = [UrlPicsum.parse_raw(url) for url in generated_urls]
+        return [
+            event.json() for event in download.download_urls(pydantic_generated_urls)
+        ]  # should use model_dump_json() in v2
 
     @task
-    def md5_image(downloaded_images: list[Event]) -> None:
-        return md5.md5(downloaded_images)
+    def md5_image(events: list[str]) -> None:
+        pydantic_events = [Event.parse_raw(event) for event in events]
+        md5.md5(pydantic_events)
 
     @task
-    def grayscale_image(downloaded_images: list[Event]) -> None:
-        return grayscale.grayscale(downloaded_images)
+    def grayscale_image(events: list[str]) -> None:
+        pydantic_events = [Event.parse_raw(event) for event in events]
+        grayscale.grayscale(pydantic_events)
 
     @task
-    def load_result_image(downloaded_images: list[Event], *_) -> None:  # noqa: ANN002
-        return load_result.load_result(downloaded_images)
+    def load_result_image(events: list[str], *_) -> None:  # noqa: ANN002
+        pydantic_events = [Event.parse_raw(event) for event in events]
+        load_result.load_result(pydantic_events)
 
     @task
     def update_monitoring_image(
-        downloaded_images: list[dict],
-        _,  # noqa: ANN001
+        events: list[str],
+        _: None,
+        dag_logical_date: str,
     ) -> None:
-        execution_date = "{{ dag_run.logical_date }}"
-        return update_monitoring.update_monitoring(downloaded_images, execution_date)
+        pydantic_events = [Event.parse_raw(event) for event in events]
+        update_monitoring.update_monitoring(pydantic_events, dag_logical_date)
 
     task_download_image = download_image(generate_urls())
     task_md5 = md5_image(task_download_image)
     task_grayscale = grayscale_image(task_download_image)
     task_load = load_result_image(task_download_image, task_md5, task_grayscale)
-    update_monitoring_image(task_download_image, task_load)
+    update_monitoring_image(
+        task_download_image,
+        task_load,
+        "{{ dag_run.logical_date }}",
+    )

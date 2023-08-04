@@ -13,7 +13,7 @@ packages = [
 python = "^3.11"
 numpy = "1.25.1"
 pymongo = "4.4.1"
-pillow = "10.0.0"
+opencv-python = "4.8.0.74"
 requests = "2.31.0"
 models =  {path = "../models", develop = true}
 apache-airflow = {version = "2.6.3", extras = ["celery", "postgres", "redis"]}
@@ -35,8 +35,4 @@ env = [
     "MONGO_INITDB_ROOT_USERNAME=test",
     "MONGO_INITDB_ROOT_PASSWORD=test",
     "BACKEND_DIRECTORY=workspace/backend",
-    "BACKEND_DATA_DIRECTORY=${BACKEND_DIRECTORY}/data",
-    "BACKEND_DOWNLOAD_DIRECTORY=${BACKEND_DATA_DIRECTORY}/download",
-    "BACKEND_ERROR_DIRECTORY=${BACKEND_DATA_DIRECTORY}/download_error",
-    "BACKEND_GRAYSCALE_DIRECTORY=${BACKEND_DATA_DIRECTORY}/grayscale"
 ]
