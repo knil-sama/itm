@@ -1,6 +1,6 @@
 import hashlib
 
-from backend.database import upsert_event
+from backend.database import get_partial_image, upsert_partial_image
 from models.event import Event, EventStatus
 from models.image import PartialImage
 
@@ -11,8 +11,9 @@ def img_to_md5(image: bytes) -> PartialImage:
     return PartialImage(id=hashlib.md5(image, usedforsecurity=False).hexdigest())
 
 
-def md5(downloaded_images: list[Event]) -> None:
-    for downloaded_image in downloaded_images:
-        if downloaded_image.status == EventStatus.SUCCESS:
-            image_md5 = img_to_md5(downloaded_image.partial_image.content)
-            upsert_event(downloaded_image.id, image_md5)
+def md5(events: list[Event]) -> None:
+    for event in events:
+        if event.status == EventStatus.SUCCESS:
+            partial_image = get_partial_image(event.id)
+            image_md5 = img_to_md5(partial_image.content)
+            upsert_partial_image(event.id, image_md5)
