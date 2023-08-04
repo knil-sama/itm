@@ -36,6 +36,19 @@ and
 Generate will generate a number of image ranging from 1 to 1000, Download will load locally all url generated, then 2 parallel jobs will process this batch, the result of both will update an "event" that will be converted into the final "image" model.
 and a last job will update monitoring collection.
 
+```mermaid
+  graph TD;
+      generate_urls-->download;
+      load_image-->update_monitoring
+      download-->grayscale;
+      download-->hash;
+      download-->load_image;
+      grayscale-->load_image
+      hash-->load_image
+      download-->update_monitoring;
+
+```
+
 # Input parameter
 
 * dags/main_dag.schedule_interval => can lower frequency
