@@ -39,29 +39,33 @@ with DAG(
     @task
     def md5_image(events: list[str]) -> None:
         pydantic_events = [Event.parse_raw(event) for event in events]
-        return md5.md5(pydantic_events)
+        md5.md5(pydantic_events)
 
     @task
     def grayscale_image(events: list[str]) -> None:
         pydantic_events = [Event.parse_raw(event) for event in events]
-        return grayscale.grayscale(pydantic_events)
+        grayscale.grayscale(pydantic_events)
 
     @task
     def load_result_image(events: list[str], *_) -> None:  # noqa: ANN002
         pydantic_events = [Event.parse_raw(event) for event in events]
-        return load_result.load_result(pydantic_events)
+        load_result.load_result(pydantic_events)
 
     @task
     def update_monitoring_image(
         events: list[str],
-        _,  # noqa: ANN001
+        _: None,
+        dag_logical_date: str,
     ) -> None:
-        execution_date = "{{ dag_run.logical_date }}"
         pydantic_events = [Event.parse_raw(event) for event in events]
-        return update_monitoring.update_monitoring(pydantic_events, execution_date)
+        update_monitoring.update_monitoring(pydantic_events, dag_logical_date)
 
     task_download_image = download_image(generate_urls())
     task_md5 = md5_image(task_download_image)
     task_grayscale = grayscale_image(task_download_image)
     task_load = load_result_image(task_download_image, task_md5, task_grayscale)
-    update_monitoring_image(task_download_image, task_load)
+    update_monitoring_image(
+        task_download_image,
+        task_load,
+        "{{ dag_run.logical_date }}",
+    )
