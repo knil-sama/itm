@@ -16,7 +16,7 @@ pymongo = "4.4.1"
 opencv-python = "4.8.0.74"
 requests = "2.31.0"
 models =  {path = "../models", develop = true}
-apache-airflow = {version = "2.6.3", extras = ["celery", "postgres", "redis"]}
+apache-airflow = {version = "2.7.0", extras = ["celery", "postgres", "redis"]}
 
 [tool.poetry.group.test.dependencies]
 pytest = "7.4.0"
