@@ -16,13 +16,13 @@ pymongo = "4.4.1"
 opencv-python = "4.8.0.74"
 requests = "2.31.0"
 models =  {path = "../models", develop = true}
-apache-airflow = {version = "2.6.3", extras = ["celery", "postgres", "redis"]}
+apache-airflow = {version = "2.7.2", extras = ["celery", "postgres", "redis"]}
 
 [tool.poetry.group.test.dependencies]
 pytest = "7.4.0"
 pytest-env = "0.8.2"
 pytest-mock = "3.11.1"
-polyfactory = "2.6.3"
+polyfactory = "2.7.2"
 pytest-cov = "4.1.0"
 more_itertools= "10.0.0"
 
